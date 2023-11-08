@@ -59,6 +59,7 @@ object Key {
     const val remoteDns = "remoteDns"
 
     const val plugin = "plugin"
+
     const val pluginConfigure = "plugin.configure"
     const val udpFallback = "udpFallback"
 
@@ -73,6 +74,11 @@ object Key {
     const val controlImport = "control.import"
     const val controlExport = "control.export"
     const val about = "about"
+
+    const val param = "param"
+    const val address = "address"
+    const val privateKey = "privateKey"
+    const val isHidePrivateKey = "isHidePrivateKey"
 }
 
 object Action {

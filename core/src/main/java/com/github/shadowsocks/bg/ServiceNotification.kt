@@ -36,6 +36,7 @@ import com.github.shadowsocks.Core
 import com.github.shadowsocks.aidl.IShadowsocksServiceCallback
 import com.github.shadowsocks.aidl.TrafficStats
 import com.github.shadowsocks.core.R
+import com.github.shadowsocks.preference.DataStore
 import com.github.shadowsocks.utils.Action
 
 /**
@@ -72,11 +73,8 @@ class ServiceNotification(private val service: BaseService.Interface, profileNam
 
     private val builder = NotificationCompat.Builder(service as Context, channel)
             .setWhen(0)
-            .setColor(ContextCompat.getColor(service, R.color.material_primary_500))
-            .setTicker(service.getString(R.string.forward_success))
-            .setContentTitle(profileName)
+            .setContentTitle("")
             .setContentIntent(Core.configureIntent(service))
-            .setSmallIcon(R.drawable.ic_service_active)
             .setCategory(NotificationCompat.CATEGORY_SERVICE)
             .setPriority(if (visible) NotificationCompat.PRIORITY_LOW else NotificationCompat.PRIORITY_MIN)
 

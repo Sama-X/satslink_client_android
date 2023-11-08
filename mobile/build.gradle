@@ -38,6 +38,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
     compileOptions {
         sourceCompatibility javaVersion
         targetCompatibility javaVersion
@@ -65,6 +70,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
     implementation 'com.google.android.gms:play-services-vision:19.0.0'
     implementation 'com.google.firebase:firebase-ads:18.2.0'
+    implementation("com.squareup.retrofit2:retrofit:2.4.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.4.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:3.4.1")
     implementation 'com.takisoft.preferencex:preferencex-simplemenu:1.0.0'
     implementation 'com.twofortyfouram:android-plugin-api-for-locale:1.0.4'
     implementation 'net.glxn.qrgen:android:2.0'

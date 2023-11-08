@@ -12,6 +12,7 @@
 
     <application
         android:name=".App"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="MissingTvBanner">
 
         <activity

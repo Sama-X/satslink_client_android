@@ -51,7 +51,7 @@ data class Profile(
         @PrimaryKey(autoGenerate = true)
         var id: Long = 0,
         var name: String? = "",
-        var host: String = "198.199.101.152",
+        var host: String = "8.8.8.8",
         var remotePort: Int = 8388,
         var password: String = "u1rRWTssNv0p",
         var method: String = "aes-256-cfb",

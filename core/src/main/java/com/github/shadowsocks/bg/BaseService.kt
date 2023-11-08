@@ -62,6 +62,7 @@ object BaseService {
     }
 
     const val CONFIG_FILE = "shadowsocks.conf"
+    var param = ""
     const val CONFIG_FILE_UDP = "shadowsocks-udp.conf"
 
     interface ExpectedException

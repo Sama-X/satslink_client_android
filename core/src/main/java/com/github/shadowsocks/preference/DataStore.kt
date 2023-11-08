@@ -67,8 +67,9 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     val tcpFastOpen: Boolean get() = TcpFastOpen.sendEnabled && publicStore.getBoolean(Key.tfo, false)
     val serviceMode get() = publicStore.getString(Key.serviceMode) ?: Key.modeVpn
     val listenAddress get() = if (publicStore.getBoolean(Key.shareOverLan, false)) "0.0.0.0" else "127.0.0.1"
+    // TODO 调用workport端口动态获取
     var portProxy: Int
-        get() = getLocalPort(Key.portProxy, 1080)
+        get() = getLocalPort(Key.portProxy, 55522)
         set(value) = publicStore.putString(Key.portProxy, value.toString())
     val proxyAddress get() = InetSocketAddress("127.0.0.1", portProxy)
     var portLocalDns: Int
@@ -104,10 +105,22 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     var plugin: String
         get() = privateStore.getString(Key.plugin) ?: ""
         set(value) = privateStore.putString(Key.plugin, value)
+    var param: String
+        get() = privateStore.getString(Key.param) ?: ""
+        set(value) = privateStore.putString(Key.param, value)
+    var address: String
+        get() = privateStore.getString(Key.address) ?: ""
+        set(value) = privateStore.putString(Key.address, value)
+    var privateKey: String
+        get() = privateStore.getString(Key.privateKey) ?: ""
+        set(value) = privateStore.putString(Key.privateKey, value)
     var udpFallback: Long?
         get() = privateStore.getLong(Key.udpFallback)
         set(value) = privateStore.putLong(Key.udpFallback, value)
     var dirty: Boolean
         get() = privateStore.getBoolean(Key.dirty) ?: false
         set(value) = privateStore.putBoolean(Key.dirty, value)
+    var isHidePrivateKey: Boolean
+        get() = privateStore.getBoolean(Key.isHidePrivateKey) ?: false
+        set(value) = privateStore.putBoolean(Key.isHidePrivateKey, value)
 }

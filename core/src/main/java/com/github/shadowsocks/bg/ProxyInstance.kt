@@ -22,6 +22,7 @@ package com.github.shadowsocks.bg
 
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.acl.Acl
 import com.github.shadowsocks.acl.AclSyncer
@@ -135,10 +136,11 @@ class ProxyInstance(val profile: Profile, private val route: String = profile.ro
         if (DataStore.tcpFastOpen) cmd += "--fast-open"
 
         service.data.processes!!.start(cmd)*/
+        //var params = "8CYfeq+PGNhFy5VjpPROZPHpwU4K9QTs1ML06LTZrG/rWABzgVhdCrwyTrfuIwxm771xTQveVx+7Q3k7D0ZwBz1r7ZHYUUOM3i10U6mg7G2b8sgFjZWU/yUOSEYSq54DqcLig3vjSj+KkTeLscQakhdj7jsxXoPWJnTNK2yaz2PQOupZDM1DxZREgCWM5cuhrABavLr7F8T9YuTwcZixh4VLh7xo8SMB+8n+0uetp5wEzmFwnmD/8enMwRpSZMco9+XO/PpM0VnwTxeCwTyz70cAuGTlrKagkqvOe4tlnooM+iywuvBWFI6M4xDiiatXArr52VgA6Rd+o41upDhRMxZI3G10bDmW6T4nT1kaX5dt7o4AH9+oYSI3/LnlRtECM6uSINBd4YTPf+txn9fsOAkVezMws+7MPfyyjRbC9iKDCmA17WnoYx2BIYPBLNBMTclT9SgVbOxoe1wLK6Wix90gYvqUPur8QoK7jArdueCAg1yhmoFMC1JHbJq+0gpIIIWdr0fvNGXb8JD2fCfNpnneyO8WvJjUOeGNXXrrJyvoTizbLSzWbbHYAPJBudPMJDDHnMRzdbjr6454brlOnrNtYxtUw706obRV/x00WDT9+v4Dc2MksoCTj2j94r9p8r1BR60iDqUz7RMn4Sj+JC4TKG3n+4zwVIHSDL3Qi0PSsfcnXn+6BQuOEwcboYyYOv+Up3JLRe9ZbTJSo1TXFp+rFqjr0F9V6PYhMDD/5FVh4bvr+rOyAwLhNAZT5qyX8PilqOq7gHWISNztAb2oAeTjxR5G4WdiO8nPRf06lSN9EEVIKi/0pwC4LlEdSL3aubtuO9A+EzC+6gBJKtF6FC9m+kAD1vOGcS5QOKfYXX4USSPq5WaMA292m9Y1zq6urdRD"
 
 
-        var params = "8CYfeq+PGNhFy5VjpPROZPHpwU4K9QTs1ML06LTZrG/rWABzgVhdCrwyTrfuIwxm771xTQveVx+7Q3k7D0ZwBz1r7ZHYUUOM3i10U6mg7G2b8sgFjZWU/yUOSEYSq54DqcLig3vjSj+KkTeLscQakhdj7jsxXoPWJnTNK2yaz2PQOupZDM1DxZREgCWM5cuhrABavLr7F8T9YuTwcZixh4VLh7xo8SMB+8n+0uetp5wEzmFwnmD/8enMwRpSZMco9+XO/PpM0VnwTxeCwTyz70cAuGTlrKagkqvOe4tlnooM+iywuvBWFI6M4xDiiatXArr52VgA6Rd+o41upDhRMxZI3G10bDmW6T4nT1kaX5dt7o4AH9+oYSI3/LnlRtECM6uSINBd4YTPf+txn9fsOAkVezMws+7MPfyyjRbC9iKDCmA17WnoYx2BIYPBLNBMTclT9SgVbOxoe1wLK6Wix90gYvqUPur8QoK7jArdueCAg1yhmoFMC1JHbJq+0gpIIIWdr0fvNGXb8JD2fCfNpnneyO8WvJjUOeGNXXrrJyvoTizbLSzWbbHYAPJBudPMJDDHnMRzdbjr6454brlOnrNtYxtUw706obRV/x00WDT9+v4Dc2MksoCTj2j94r9p8r1BR60iDqUz7RMn4Sj+JC4TKG3n+4zwVIHSDL3Qi0PSsfcnXn+6BQuOEwcboYyYOv+Up3JLRe9ZbTJSo1TXFp+rFqjr0F9V6PYhMDD/5FVh4bvr+rOyAwLhNAZT5qyX8PilqOq7gHWISNztAb2oAeTjxR5G4WdiO8nPRf06lSN9EEVIKi/0pwC4LlEdSL3aubtuO9A+EzC+6gBJKtF6FC9m+kAD1vOGcS5QOKfYXX4USSPq5WaMA292m9Y1zq6urdRD"
-
+        var params = DataStore.param
+        Log.e("TAG", "start: " + params )
         var cmd = arrayListOf(
                 File((service as Context).applicationInfo.nativeLibraryDir, Executable.SS_LOCAL).absolutePath,
                 params,
