@@ -108,6 +108,9 @@ object DataStore : OnPreferenceDataStoreChangeListener {
     var param: String
         get() = privateStore.getString(Key.param) ?: ""
         set(value) = privateStore.putString(Key.param, value)
+    var isVip: Boolean
+        get() = privateStore.getBoolean(Key.isVip) ?: false
+        set(value) = privateStore.putBoolean(Key.isVip, value)
     var address: String
         get() = privateStore.getString(Key.address) ?: ""
         set(value) = privateStore.putString(Key.address, value)

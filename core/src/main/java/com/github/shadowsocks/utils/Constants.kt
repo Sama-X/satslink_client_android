@@ -79,6 +79,7 @@ object Key {
     const val address = "address"
     const val privateKey = "privateKey"
     const val isHidePrivateKey = "isHidePrivateKey"
+    const val isVip = "isVip"
 }
 
 object Action {

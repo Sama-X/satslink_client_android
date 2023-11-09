@@ -80,6 +80,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.lang.ref.WeakReference
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback,
     OnPreferenceDataStoreChangeListener,
@@ -120,6 +122,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback,
     private lateinit var mIvCopyAddress: ImageView
     private lateinit var mTvCrePriKey: TextView
     private lateinit var mTvImportPriKey: TextView
+    private lateinit var mTvExpirationTime: TextView
     private lateinit var mIvRefresh: ImageView
     private var audiorIP: String = ""
     private var workerIp: String = ""
@@ -143,6 +146,7 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback,
         }.start()
         SingleInstanceActivity.register(this) ?: return
         setContentView(R.layout.layout_main)
+        mTvExpirationTime = findViewById(R.id.tv_expiration_time)
         mIvRefresh = findViewById(R.id.iv_refresh)
         mIvRefresh.setOnClickListener {
             if (this.state == BaseService.State.Connected) {
@@ -304,17 +308,25 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback,
         fab = findViewById(R.id.fab)
         fab.setOnClickListener { toggle() }
         mFlStart.setOnClickListener {
-            if (workerIp != "") {
-                toggle()
-            } else {
+            if (!DataStore.isVip){
                 Toast.makeText(
                     this@MainActivity,
-                    "loading nodes please wait...",
+                    "is not vip",
                     Toast.LENGTH_SHORT
                 )
                     .show()
+            }else{
+                if (workerIp != "") {
+                    toggle()
+                } else {
+                    Toast.makeText(
+                        this@MainActivity,
+                        "loading nodes please wait...",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
             }
-
         }
         fab.setOnApplyWindowInsetsListener { view, insets ->
             view.updateLayoutParams<ViewGroup.MarginLayoutParams> {
@@ -612,7 +624,9 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback,
                 }
                 var socks5 = result["socks5"].asInt;
                 DataStore.portProxy = socks5
-                setVipInfo(address)
+                //setVipInfo(address)
+                getVipInfo(address)
+                getNodeInfo(address)
             }
 
             override fun onFailure(call: Call<JsonObject?>, t: Throwable) {
@@ -968,9 +982,17 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback,
                         Toast.LENGTH_SHORT
                     )
                         .show()
+                    mTvExpirationTime.text = "Expiration Time:Expired"
+                    DataStore.isVip = false
                     return
                 }
-                getNodeInfo(address)
+                var vip = result["vip"].asBoolean
+                DataStore.isVip = vip
+                var endTime = result["endTime"].asString
+                val endTimeLong = java.lang.Long.valueOf(endTime + "000")
+                val dateFormat: DateFormat = SimpleDateFormat("yyyy-MM-dd")
+                val format = dateFormat.format(endTimeLong)
+                mTvExpirationTime.text = "Expiration Time:" + format
             }
 
             override fun onFailure(call: Call<JsonObject?>, t: Throwable) {
@@ -1133,38 +1155,38 @@ class MainActivity : AppCompatActivity(), ShadowsocksConnection.Callback,
         }
         val a = """
                 {
-                "AR":["BR","CA","US","PT","ES","AT","FR","GB","IT","BE","GR","NL","DK","HU","TR","DE","IL","NO","SE","FI","IN","AU","ID","MY","SG","HK","PH","TW","KR","JP","NZ"],
-                "AT":["FR","BE","NL","GB","DK","IT","ES","DE","HU","NO","PT","GR","SE","TR","FI","IL","IN","CA","BR","US","AR","ID","AU","MY","SG","HK","TW","PH","KR","JP","NZ"],
-                "AU":["ID","SG","MY","IN","PH","HK","TW","KR","NZ","IL","JP","TR","GR","HU","IT","DE","SE","FI","AT","BE","FR","ES","NL","NO","DK","PT","GB","BR","AR","CA","US"],
-                "BE":["NL","FR","AT","GB","DK","DE","NO","IT","ES","HU","SE","PT","GR","TR","FI","IL","IN","CA","BR","US","ID","AR","AU","MY","SG","HK","TW","PH","KR","JP","NZ"],
-                "BR":["AR","PT","CA","ES","US","AT","FR","GB","IT","BE","GR","NL","DK","HU","TR","DE","IL","NO","SE","FI","IN","AU","ID","MY","SG","HK","PH","TW","KR","JP","NZ"],
-                "CA":["US","BR","PT","ES","GB","AR","FR","AT","BE","NL","DK","NO","IT","DE","HU","SE","GR","TR","FI","IL","IN","AU","ID","MY","SG","HK","TW","PH","KR","JP","NZ"],
-                "DE":["HU","DK","NO","SE","NL","BE","AT","IT","FR","GB","GR","FI","TR","ES","PT","IL","IN","CA","BR","ID","MY","AU","SG","HK","TW","US","AR","PH","KR","JP","NZ"],
-                "DK":["NL","BE","NO","DE","GB","FR","AT","SE","HU","IT","ES","FI","GR","PT","TR","IL","IN","CA","BR","ID","US","MY","AU","SG","AR","HK","TW","PH","KR","JP","NZ"],
-                "ES":["PT","AT","FR","GB","BE","NL","IT","DK","DE","HU","GR","NO","TR","SE","FI","IL","BR","CA","IN","AR","US","AU","ID","MY","SG","HK","TW","PH","KR","JP","NZ"],
-                "FI":["SE","NO","DE","HU","DK","NL","BE","IT","TR","AT","FR","GR","GB","IL","ES","PT","IN","ID","MY","HK","SG","CA","AU","TW","KR","BR","PH","JP","US","AR","NZ"],
-                "FR":["AT","BE","GB","NL","DK","ES","DE","IT","NO","HU","PT","SE","GR","TR","FI","IL","IN","CA","BR","US","AR","ID","AU","MY","SG","HK","TW","PH","KR","JP","NZ"],
-                "GB":["FR","BE","NL","AT","DK","ES","DE","NO","PT","IT","HU","SE","GR","TR","FI","IL","CA","IN","BR","US","AR","ID","AU","MY","SG","HK","TW","PH","KR","JP","NZ"],
-                "GR":["TR","IT","HU","IL","DE","AT","BE","FR","NL","SE","DK","ES","NO","GB","FI","PT","IN","BR","ID","AU","MY","SG","CA","HK","TW","PH","KR","AR","US","JP","NZ"],
-                "HK":["TW","PH","KR","MY","SG","JP","ID","IN","AU","NZ","IL","TR","GR","FI","HU","SE","IT","DE","NO","DK","AT","NL","BE","FR","GB","ES","PT","BR","AR","CA","US"],
-                "HU":["DE","IT","GR","TR","SE","AT","BE","NL","DK","NO","FR","GB","FI","ES","IL","PT","IN","BR","ID","CA","MY","AU","SG","HK","TW","PH","KR","AR","US","JP","NZ"],
-                "ID":["MY","SG","AU","PH","HK","IN","TW","KR","JP","NZ","IL","TR","GR","HU","IT","FI","DE","SE","AT","NO","BE","NL","FR","DK","ES","GB","PT","BR","AR","CA","US"],
-                "IL":["TR","GR","HU","IT","DE","SE","AT","BE","NL","FI","FR","NO","DK","ES","GB","IN","PT","ID","AU","MY","SG","HK","TW","PH","BR","KR","JP","CA","AR","US","NZ"],
-                "IN":["ID","MY","SG","AU","HK","IL","PH","TW","TR","GR","KR","HU","IT","FI","SE","DE","JP","NO","AT","BE","NL","DK","FR","ES","GB","PT","NZ","BR","AR","CA","US"],
-                "IT":["HU","GR","AT","DE","BE","FR","TR","NL","DK","GB","ES","NO","SE","PT","IL","FI","IN","BR","CA","ID","AU","MY","SG","HK","AR","TW","PH","US","KR","JP","NZ"],
-                "JP":["KR","TW","PH","HK","SG","MY","ID","IN","AU","NZ","IL","TR","FI","GR","HU","SE","IT","DE","NO","DK","NL","BE","AT","FR","GB","ES","PT","BR","AR","CA","US"],
-                "KR":["JP","TW","HK","PH","MY","SG","ID","IN","AU","NZ","IL","TR","FI","GR","HU","SE","IT","DE","NO","DK","NL","BE","AT","FR","GB","ES","PT","BR","AR","CA","US"],
-                "MY":["SG","ID","PH","HK","AU","TW","IN","KR","JP","NZ","IL","TR","GR","HU","IT","FI","SE","DE","NO","AT","BE","NL","DK","FR","ES","GB","PT","BR","AR","CA","US"],
-                "NL":["BE","DK","FR","AT","GB","DE","NO","IT","HU","SE","ES","PT","GR","FI","TR","IL","IN","CA","BR","US","ID","AU","MY","AR","SG","HK","TW","PH","KR","JP","NZ"],
-                "NO":["DK","SE","DE","NL","BE","FR","GB","HU","AT","FI","IT","GR","ES","TR","PT","IL","IN","CA","BR","ID","MY","AU","SG","HK","US","TW","AR","KR","PH","JP","NZ"],
-                "NZ":["PH","SG","MY","ID","AU","TW","HK","JP","KR","IN","IL","TR","GR","HU","IT","FI","DE","SE","AT","NO","BE","NL","FR","DK","ES","GB","PT","BR","AR","CA","US"],
-                "PH":["TW","HK","SG","MY","KR","JP","ID","AU","IN","NZ","IL","TR","GR","HU","FI","IT","SE","DE","NO","AT","DK","NL","BE","FR","GB","ES","PT","BR","AR","CA","US"],
-                "PT":["ES","FR","GB","AT","BE","NL","IT","DK","DE","HU","GR","NO","TR","SE","IL","FI","BR","CA","IN","AR","US","AU","ID","MY","SG","HK","TW","PH","KR","JP","NZ"],
-                "SE":["NO","DE","FI","DK","HU","NL","BE","IT","AT","FR","GB","GR","TR","ES","IL","PT","IN","CA","ID","BR","MY","HK","SG","AU","TW","KR","PH","US","AR","JP","NZ"],
-                "SG":["MY","ID","PH","HK","AU","TW","IN","KR","JP","NZ","IL","TR","GR","HU","IT","FI","SE","DE","AT","NO","BE","NL","DK","FR","ES","GB","PT","BR","AR","CA","US"],
-                "TR":["GR","IL","HU","IT","DE","SE","AT","BE","NL","FR","DK","NO","FI","GB","ES","PT","IN","ID","AU","MY","SG","BR","HK","TW","PH","CA","KR","AR","JP","US","NZ"],
-                "TW":["HK","PH","KR","JP","MY","SG","ID","IN","AU","NZ","IL","TR","GR","FI","HU","SE","IT","DE","NO","DK","AT","NL","BE","FR","GB","ES","PT","BR","AR","CA","US"],
-                "US":["CA","BR","AR","PT","ES","GB","FR","AT","BE","NL","DK","NO","IT","DE","HU","SE","GR","TR","FI","IL","IN","AU","ID","MY","SG","HK","TW","PH","KR","JP","NZ"]
+                "AR":["AR","BR","CA","US","PT","ES","AT","FR","GB","IT","BE","GR","NL","DK","HU","TR","DE","IL","NO","SE","FI","IN","AU","ID","MY","SG","HK","PH","TW","KR","JP","NZ"],
+                "AT":["AT","FR","BE","NL","GB","DK","IT","ES","DE","HU","NO","PT","GR","SE","TR","FI","IL","IN","CA","BR","US","AR","ID","AU","MY","SG","HK","TW","PH","KR","JP","NZ"],
+                "AU":["AU","ID","SG","MY","IN","PH","HK","TW","KR","NZ","IL","JP","TR","GR","HU","IT","DE","SE","FI","AT","BE","FR","ES","NL","NO","DK","PT","GB","BR","AR","CA","US"],
+                "BE":["BE","NL","FR","AT","GB","DK","DE","NO","IT","ES","HU","SE","PT","GR","TR","FI","IL","IN","CA","BR","US","ID","AR","AU","MY","SG","HK","TW","PH","KR","JP","NZ"],
+                "BR":["BR","AR","PT","CA","ES","US","AT","FR","GB","IT","BE","GR","NL","DK","HU","TR","DE","IL","NO","SE","FI","IN","AU","ID","MY","SG","HK","PH","TW","KR","JP","NZ"],
+                "CA":["CA","US","BR","PT","ES","GB","AR","FR","AT","BE","NL","DK","NO","IT","DE","HU","SE","GR","TR","FI","IL","IN","AU","ID","MY","SG","HK","TW","PH","KR","JP","NZ"],
+                "DE":["DE","HU","DK","NO","SE","NL","BE","AT","IT","FR","GB","GR","FI","TR","ES","PT","IL","IN","CA","BR","ID","MY","AU","SG","HK","TW","US","AR","PH","KR","JP","NZ"],
+                "DK":["DK","NL","BE","NO","DE","GB","FR","AT","SE","HU","IT","ES","FI","GR","PT","TR","IL","IN","CA","BR","ID","US","MY","AU","SG","AR","HK","TW","PH","KR","JP","NZ"],
+                "ES":["ES","PT","AT","FR","GB","BE","NL","IT","DK","DE","HU","GR","NO","TR","SE","FI","IL","BR","CA","IN","AR","US","AU","ID","MY","SG","HK","TW","PH","KR","JP","NZ"],
+                "FI":["FI","SE","NO","DE","HU","DK","NL","BE","IT","TR","AT","FR","GR","GB","IL","ES","PT","IN","ID","MY","HK","SG","CA","AU","TW","KR","BR","PH","JP","US","AR","NZ"],
+                "FR":["FR","AT","BE","GB","NL","DK","ES","DE","IT","NO","HU","PT","SE","GR","TR","FI","IL","IN","CA","BR","US","AR","ID","AU","MY","SG","HK","TW","PH","KR","JP","NZ"],
+                "GB":["GB","FR","BE","NL","AT","DK","ES","DE","NO","PT","IT","HU","SE","GR","TR","FI","IL","CA","IN","BR","US","AR","ID","AU","MY","SG","HK","TW","PH","KR","JP","NZ"],
+                "GR":["GR","TR","IT","HU","IL","DE","AT","BE","FR","NL","SE","DK","ES","NO","GB","FI","PT","IN","BR","ID","AU","MY","SG","CA","HK","TW","PH","KR","AR","US","JP","NZ"],
+                "HK":["HK","TW","PH","KR","MY","SG","JP","ID","IN","AU","NZ","IL","TR","GR","FI","HU","SE","IT","DE","NO","DK","AT","NL","BE","FR","GB","ES","PT","BR","AR","CA","US"],
+                "HU":["HU","DE","IT","GR","TR","SE","AT","BE","NL","DK","NO","FR","GB","FI","ES","IL","PT","IN","BR","ID","CA","MY","AU","SG","HK","TW","PH","KR","AR","US","JP","NZ"],
+                "ID":["ID","MY","SG","AU","PH","HK","IN","TW","KR","JP","NZ","IL","TR","GR","HU","IT","FI","DE","SE","AT","NO","BE","NL","FR","DK","ES","GB","PT","BR","AR","CA","US"],
+                "IL":["IL","TR","GR","HU","IT","DE","SE","AT","BE","NL","FI","FR","NO","DK","ES","GB","IN","PT","ID","AU","MY","SG","HK","TW","PH","BR","KR","JP","CA","AR","US","NZ"],
+                "IN":["IN","ID","MY","SG","AU","HK","IL","PH","TW","TR","GR","KR","HU","IT","FI","SE","DE","JP","NO","AT","BE","NL","DK","FR","ES","GB","PT","NZ","BR","AR","CA","US"],
+                "IT":["IT","HU","GR","AT","DE","BE","FR","TR","NL","DK","GB","ES","NO","SE","PT","IL","FI","IN","BR","CA","ID","AU","MY","SG","HK","AR","TW","PH","US","KR","JP","NZ"],
+                "JP":["JP","KR","TW","PH","HK","SG","MY","ID","IN","AU","NZ","IL","TR","FI","GR","HU","SE","IT","DE","NO","DK","NL","BE","AT","FR","GB","ES","PT","BR","AR","CA","US"],
+                "KR":["KR","JP","TW","HK","PH","MY","SG","ID","IN","AU","NZ","IL","TR","FI","GR","HU","SE","IT","DE","NO","DK","NL","BE","AT","FR","GB","ES","PT","BR","AR","CA","US"],
+                "MY":["MY","SG","ID","PH","HK","AU","TW","IN","KR","JP","NZ","IL","TR","GR","HU","IT","FI","SE","DE","NO","AT","BE","NL","DK","FR","ES","GB","PT","BR","AR","CA","US"],
+                "NL":["NL","BE","DK","FR","AT","GB","DE","NO","IT","HU","SE","ES","PT","GR","FI","TR","IL","IN","CA","BR","US","ID","AU","MY","AR","SG","HK","TW","PH","KR","JP","NZ"],
+                "NO":["NO","DK","SE","DE","NL","BE","FR","GB","HU","AT","FI","IT","GR","ES","TR","PT","IL","IN","CA","BR","ID","MY","AU","SG","HK","US","TW","AR","KR","PH","JP","NZ"],
+                "NZ":["NZ","PH","SG","MY","ID","AU","TW","HK","JP","KR","IN","IL","TR","GR","HU","IT","FI","DE","SE","AT","NO","BE","NL","FR","DK","ES","GB","PT","BR","AR","CA","US"],
+                "PH":["PH","TW","HK","SG","MY","KR","JP","ID","AU","IN","NZ","IL","TR","GR","HU","FI","IT","SE","DE","NO","AT","DK","NL","BE","FR","GB","ES","PT","BR","AR","CA","US"],
+                "PT":["PT","ES","FR","GB","AT","BE","NL","IT","DK","DE","HU","GR","NO","TR","SE","IL","FI","BR","CA","IN","AR","US","AU","ID","MY","SG","HK","TW","PH","KR","JP","NZ"],
+                "SE":["SE","NO","DE","FI","DK","HU","NL","BE","IT","AT","FR","GB","GR","TR","ES","IL","PT","IN","CA","ID","BR","MY","HK","SG","AU","TW","KR","PH","US","AR","JP","NZ"],
+                "SG":["SG","MY","ID","PH","HK","AU","TW","IN","KR","JP","NZ","IL","TR","GR","HU","IT","FI","SE","DE","AT","NO","BE","NL","DK","FR","ES","GB","PT","BR","AR","CA","US"],
+                "TR":["TR","GR","IL","HU","IT","DE","SE","AT","BE","NL","FR","DK","NO","FI","GB","ES","PT","IN","ID","AU","MY","SG","BR","HK","TW","PH","CA","KR","AR","JP","US","NZ"],
+                "TW":["TW","HK","PH","KR","JP","MY","SG","ID","IN","AU","NZ","IL","TR","GR","FI","HU","SE","IT","DE","NO","DK","AT","NL","BE","FR","GB","ES","PT","BR","AR","CA","US"],
+                "US":["US","CA","BR","AR","PT","ES","GB","FR","AT","BE","NL","DK","NO","IT","DE","HU","SE","GR","TR","FI","IL","IN","AU","ID","MY","SG","HK","TW","PH","KR","JP","NZ"]
                 }
                 """.trimIndent()
         val gson = Gson()
